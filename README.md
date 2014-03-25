@@ -71,7 +71,7 @@ approach, simply because it isn't yet clear that it *should.* For instance:
 
 ## License
 
-This repository contains code specifically put into the public domain.
+This repository consists entirely of code specifically put into the public domain.
 
 ## Contribution
 
