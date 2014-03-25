@@ -22,15 +22,40 @@ fi
 simplekey_root=$(dirname $0)
 find_subcommand() {
   case $1 in
-    (seal) subcommand_path="${simplekey_root}/commands/seal" ;;
-    (open) subcommand_path="${simplekey_root}/commands/open" ;;
-    (*) echo "Unknown command: ${subcommand}"
+    (seal)
+      subcommand_name=seal
+      subcommand_path="${simplekey_root}/commands/seal" ;;
+    (open)
+      subcommand_name=open
+      subcommand_path="${simplekey_root}/commands/open" ;;
+    (*)
+      echo "Unknown command: ${subcommand}"
   esac
+}
+
+fail() {
+  echo $1
+  echo
+  usage
+  exit 1
+}
+
+run() {
+  setup $*
+  validate
+  invoke
+  echo
+  if [ $? -eq 0 ]; then
+    success
+  else
+    failure
+  fi
 }
 
 subcommand=$1
 shift
 find_subcommand $subcommand
 source $subcommand_path
+run "$*"
 
 # vim: set ft=sh

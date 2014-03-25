@@ -1,59 +1,59 @@
 #!/usr/bin/env sh
 
 usage() {
-  echo "keysimple seal <filename> <recipient>"
+  echo "simplekey seal <filename> <recipient>"
   echo "  Encrypts, signs and armors a file to a recipient"
   echo "  You will be able to safely email the resulting file to any and all of the people listed."
 }
 
-fail() {
-  echo $1
-  echo
-  usage
-  exit 1
+setup() {
+  file=$1
+  shift
+
+  recipients=$1
+  shift
+
+  output="$(basename ${file}).gpg.asc"
 }
 
-file=$1
-shift
+validate() {
+  #while [ $# -gt 0 ]; do
+  #  recipients="${recipients}\:-r\:${1}"
+  #  shift
+  #done
+  #
+  if [ -z "$file" ]; then
+    fail "No file argument! I have to have a file to encrypt."
+  fi
 
-recipients=$1
-shift
+  if [ -z "$recipients" ]; then
+    fail "No recipients listed! I need at least one person to encrypt this file for."
+  fi
+
+  if [ ! -f "$file" ]; then
+    fail "I can't find \"${file}\", so I can't encrypt it!"
+  fi
 
 
-#while [ $# -gt 0 ]; do
-#  recipients="${recipients}\:-r\:${1}"
-#  shift
-#done
-#
-if [ -z "$file" ]; then
-  fail "No file argument! I have to have a file to encrypt."
-fi
+  if [ -f "$output" ]; then
+    fail "I want to encrypt '${file}' to '${output}' but there's already a file by that name and I don't want to mess anything up."
+  fi
+}
 
-if [ -z "$recipients" ]; then
-  fail "No recipients listed! I need at least one person to encrypt this file for."
-fi
+invoke() {
+  echo "Running $GNUPG..."
 
-if [ ! -f "$file" ]; then
-  fail "I can't find \"${file}\", so I can't encrypt it!"
-fi
+  #This command will:
+  #  sign with your default key
+  #  encrypt to the selected recipient
+  #  also encrypt to yourself (not being able to re-decrypt can be very confusing).
+  $GNUPG  --armor --recipient "${recipients}"  --output  "${output}" --hidden-recipient $MY_KEY --sign  --encrypt  "${file}"
+}
 
-output="$(basename ${file}).gpg.asc"
-
-if [ -f "$output" ]; then
-  fail "I want to encrypt '${file}' to '${output}' but there's already a file by that name and I don't want to mess anything up."
-fi
-
-echo "Running $GNUPG..."
-
-#This command will:
-#  sign with your default key
-#  encrypt to the selected recipient
-#  also encrypt to yourself (not being able to re-decrypt can be very confusing).
-$GNUPG  --armor --recipient "${recipients}"  --output  "${output}" --hidden-recipient $MY_KEY --sign  --encrypt  "${file}"
-
-if [ $? -eq 0 ]; then
+success() {
   echo "Successfully encrypted \"$file\" to \"$output\""
-else
-  echo
+}
+
+failure() {
   echo "We had some issue with GPG - it may be that you don't have keys for your recipients, or something."
-fi
+}

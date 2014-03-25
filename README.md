@@ -58,6 +58,15 @@ Planned are:
 
 These should be the minimal set required to use GPG effectively.
 
+Considered for inclusion:
+
+```
+./simplekey sign <file> #detached signature
+
+./simplekey affirm <account> #produce an signed affirmation
+./simplekey verify <affirmation> #check a signed affirmation
+```
+
 ## Related topics
 
 Public key encryption is a fascinating space. It represents a fusion between

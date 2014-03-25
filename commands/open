@@ -1,0 +1,47 @@
+#!/usr/bin/env sh
+
+usage(){
+  echo "simplekey ${subcommand_name} <file>"
+  echo "  Verifies signatures on <file> and decrypts it"
+  echo "  <file> has to end with '.gpg.asc' and the output will have that extension stripped."
+}
+
+setup(){
+  file=$1
+  shift
+  output=$(echo $file | sed 's/\.gpg\.asc$//')
+}
+
+validate(){
+  if [ -z $file ]; then
+    fail "Need a file name to decrypt!"
+  fi
+
+  if [ ! -f $file ]; then
+    fail "Can't find '$file' to decrypt!"
+  fi
+
+  if echo $file | grep -q '\.gpg\.asc$'; then
+    :
+  else
+    fail "Input files have to end with '.gpg.asc'"
+  fi
+
+  if [ -f $output ]; then
+    fail "The output file ${output} exists already. I don't want to mess anything up."
+  fi
+}
+
+invoke(){
+  echo "Running $GNUPG..."
+
+  $GNUPG --output "${output}" --decrypt "${file}"
+}
+
+success(){
+  echo "Successfully verified the signature on and decrypted '${file}' into '${output}'"
+}
+
+failure(){
+  echo "We had some issue with GPG - it may be that you don't have keys for the sender, or the message wasn't valid."
+}
