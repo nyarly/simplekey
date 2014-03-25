@@ -23,13 +23,19 @@ simplekey_root=$(dirname $0)
 find_subcommand() {
   case $1 in
     (seal)
-      subcommand_name=seal
+      subcommand_name="seal"
       subcommand_path="${simplekey_root}/commands/seal" ;;
     (open)
-      subcommand_name=open
+      subcommand_name="open"
       subcommand_path="${simplekey_root}/commands/open" ;;
+    (help)
+      subcommand_name="help"
+      subcommand_path="${simplekey_root}/commands/help" ;;
     (*)
       echo "Unknown command: ${subcommand}"
+      echo
+      subcommand_name=""
+      subcommand_path="${simplekey_root}/commands/help" ;;
   esac
 }
 

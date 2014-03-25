@@ -1,0 +1,56 @@
+#!/usr/bin/env sh
+
+usage(){
+  echo "simplekey ${subcommand_name} [command]"
+  echo "  prints some usage information about a command"
+}
+
+setup(){
+  command_name="${1}"
+  shift
+}
+
+validate(){
+  :
+}
+
+print_help(){
+  find_subcommand $1
+  if [ ! -z "${subcommand_name}" ]; then
+    source $subcommand_path
+    usage
+  fi
+}
+
+invoke(){
+  if [ -z $command_name ]; then
+    echo
+    echo "'simplekey' is a wrapper around gnupg to simplify its operations."
+    echo "Generally speaking, you'll want to 'seal' files before sending them to people,"
+    echo "and 'open' files you've received."
+    echo
+
+    for command in $(ls ${simplekey_root}/commands/); do
+      subcommand_name=${command}
+      print_help $command
+      echo
+    done
+  else
+    find_subcommand $command_name
+    if [ -z $subcommand_name  ]; then
+      echo "Unknown command: '${command_name}'"
+    else
+      print_help $command_name
+    fi
+  fi
+
+  find_subcommand "help"
+  source $subcommand_path
+}
+
+success(){
+  :
+}
+failure(){
+  echo "Problems displaying help. That's really weird."
+}
