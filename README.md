@@ -68,3 +68,16 @@ approach, simply because it isn't yet clear that it *should.* For instance:
 * Low confidence key verification via online identities. (But see affirms/)
 * Higher security "detached" master keys.
 * Key signing parties
+
+## License
+
+This repository contains code specifically put into the public domain.
+
+## Contribution
+
+I'm eagerly hoping for outside review and contribution to this project. The
+goals outlined in the introduction are inflexible, though.
+
+Furthermore, be aware that the act of issuing a Pull Request to this repository
+contitutes a contribution of the work in the Pull Request into the public
+domain.
