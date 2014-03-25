@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+#Set a useful default for the GnuPG program
+GNUPG=$(which gpg2)
+if [ -z ${GNUPG} ]; then
+  GNUPG=$(which gpg)
+fi
+if [ -z ${GNUPG} ]; then
+  echo "Cannot find gpg or gpg2! Do you have gnupg installed?"
+fi
+
+MY_KEY=$($GNUPG --gpgconf-list | grep ^default-key | sed 's/[^:]*:[^:*]://')
+if [ -z $MY_KEY ]; then
+  MY_KEY=$($GNUPG --list-secret-keys | grep ^sec | head -n 1 | sed 's#[^/]*/\(\S*\).*#\1#')
+fi
+
+if [ -z $MY_KEY ]; then
+  echo "Hm. I can't find a secret key for you - this isn't going to be very useful until you get out set up."
+fi
+
+#Dispatch the command - commands are listed explicitly to avoid errors
+simplekey_root=$(dirname $0)
+find_subcommand() {
+  case $1 in
+    (seal) subcommand_path="${simplekey_root}/commands/seal" ;;
+    (open) subcommand_path="${simplekey_root}/commands/open" ;;
+    (*) echo "Unknown command: ${subcommand}"
+  esac
+}
+
+subcommand=$1
+shift
+find_subcommand $subcommand
+source $subcommand_path
+
+# vim: set ft=sh

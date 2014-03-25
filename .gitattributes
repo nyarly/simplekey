@@ -1,0 +1,3 @@
+simplekey filter=trimwhite
+affirm/* filter=trimwhite
+commands/* filter=trimwhite

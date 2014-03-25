@@ -1,0 +1,20 @@
+I hereby affirm that I control both:
+The OpenPGP public key with the fingerprint on the next line
+
+The public internet identity associated with the URL on the next line
+
+This affirmation is proven by:
+  This affirmation should be available at a URL attached to the above public key with the
+    annotation "digest-affirmation@madhelm.net"
+  The SHA-512 digest of this affirmation should be availble at a URL
+    controlled by the above identity and attached to the above public key with
+    the annotation "affirmation-digest@madhelm.net"
+This affirmation should follow the form layed out at https://madhelm.net/affirmation
+  With the exception of the fingerprint and URL, it should be completely
+  unaltered.
+No line should end with whitespace, and there should be no blank lines.
+Immediately following should be the signature of this affirmation by the above
+  referenced public key.
+Having validated all the above, you are invited to trust the same entity
+  controls both the public key and identity referenced above, but cautioned that
+  that may not necessarily be any person in particular.
