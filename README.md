@@ -23,7 +23,7 @@ The philosophic goals here are these:
    something more, though, the goal is that you have a foundation to start
    with, and some direction on how to proceed.
 
-== Requirements
+## Requirements
 
 You'll need gnupg2 installed. Most Linux distros have some variant of
 
@@ -36,7 +36,7 @@ Mac OS X can do
 You'll also need `sh`, `grep` and `sed`. I only mention that because
 the requirements have been made intentionally as light as possible.
 
-== Usage:
+## Usage:
 
 Simplekey presents a series of subcommands. At present there are two:
 
@@ -58,7 +58,7 @@ Planned are:
 
 These should be the minimal set required to use GPG effectively.
 
-== Related topics
+## Related topics
 
 Public key encryption is a fascinating space. It represents a fusion between
 challenging math and logic and human interactions which probably can't be
