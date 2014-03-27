@@ -19,6 +19,8 @@ if [ -z $MY_KEY ]; then
   echo "Try: $0 help generate"
 fi
 
+GNUPGHOME= ${GNUPGHOME:-$(gpgconf --list-dirs | grep ^homedir | sed 's/^[^:]*://')}
+
 #Dispatch the command - commands are listed explicitly to avoid errors
 simplekey_root=$(dirname $0)
 find_subcommand() {

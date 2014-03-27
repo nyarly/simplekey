@@ -9,6 +9,8 @@ setup(){
   real_name=$1
   email=$2
   comment=$3
+
+  revoke_path="${GNUPGHOME}/${email}-revoke.gpg"
 }
 
 validate(){
@@ -30,6 +32,11 @@ validate(){
 
   if [ -z "$comment" ]; then
     fail "I need an identifying comment for your identity, like 'main email address' or something"
+  fi
+
+  echo $revoke_path
+  if [ -f "$revoke_path" ]; then
+    fail "There is already a file at '$revoke_path' - since there's not a key for '${email}' maybe it's old?"
   fi
 }
 
@@ -75,6 +82,38 @@ PARAM
 	2y
         save
 COMMANDS
+
+  set -x
+
+  RETVAL=$?
+
+  echo $revoke_path
+  $GNUPG --command-fd=0 --gen-revoke $email > "${revoke_path}" <<-COMMANDS
+        y
+        1
+        Revocation generated along with key ahead of need.
+
+        y
+COMMANDS
+
+  if [ $RETVAL -ne 0 ]; then
+    RETVAL=$?
+  fi
+
+  #For development purposes
+  send_command= "$GNUPG --keyserver hkp://keys.gnupg.net --send-keys $email"
+  if [ $DONT_SEND = "yes" ]; then
+    echo "Not actually sending key..."
+    echo $send_command
+  else
+    $send_command
+  fi
+
+  if [ $RETVAL -ne 0 ]; then
+    RETVAL=$?
+  fi
+
+  return $RETVAL
 }
 
 success(){
