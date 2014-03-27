@@ -10,7 +10,7 @@ setup(){
   email=$2
   comment=$3
 
-  revoke_path="${GNUPGHOME}/${email}-revoke.gpg"
+  revoke_path="${GNUPGHOME}/${email}-revoke.gpg.asc"
 }
 
 validate(){
@@ -88,7 +88,7 @@ COMMANDS
   RETVAL=$?
 
   echo $revoke_path
-  $GNUPG --command-fd=0 --gen-revoke $email > "${revoke_path}" <<-COMMANDS
+  $GNUPG --command-fd=0 --output "${revoke_path}" --gen-revoke $email <<-COMMANDS
         y
         1
         Revocation generated along with key ahead of need.
