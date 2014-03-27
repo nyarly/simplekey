@@ -9,4 +9,7 @@ Second, as part of the above, this project is in the public domain. I retain no
 rights to how it's used. Your Pull Request constitutes your good faith
 contribution of the work therein into the public domain as well. I don't think
 that will really be a problem for most people, but you should know that going
-in.
+in. To simplify matters though, please include a --clearsign'd version of
+WAIVER.txt into waivers/
+
+`gpg --output waivers/<yourname>.asc --clearsign WAIVER.txt`
