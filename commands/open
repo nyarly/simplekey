@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 usage(){
-  echo "simplekey ${subcommand_name} <file>"
+  echo "<file>"
   echo "  Verifies signatures on <file> and decrypts it"
   echo "  <file> has to end with '.gpg.asc' and the output will have that extension stripped."
 }

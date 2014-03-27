@@ -15,7 +15,8 @@ if [ -z $MY_KEY ]; then
 fi
 
 if [ -z $MY_KEY ]; then
-  echo "Hm. I can't find a secret key for you - this isn't going to be very useful until you get out set up."
+  echo "Hm. I can't find a secret key for you - this isn't going to be very useful until you get one set up."
+  echo "Try: $0 help generate"
 fi
 
 #Dispatch the command - commands are listed explicitly to avoid errors
@@ -28,6 +29,9 @@ find_subcommand() {
     (open)
       subcommand_name="open"
       subcommand_path="${simplekey_root}/commands/open" ;;
+    (generate)
+      subcommand_name="generate"
+      subcommand_path="${simplekey_root}/commands/generate" ;;
     (help)
       subcommand_name="help"
       subcommand_path="${simplekey_root}/commands/help" ;;
@@ -42,18 +46,24 @@ find_subcommand() {
 fail() {
   echo $1
   echo
-  usage
+  help_text
   exit 1
 }
 
+help_text(){
+  echo -n "$0 $subcommand_name "
+  usage
+}
+
 run() {
-  setup $*
+  setup "$@"
   validate
   invoke
-  echo
   if [ $? -eq 0 ]; then
+    echo
     success
   else
+    echo
     failure
   fi
 }
@@ -62,6 +72,6 @@ subcommand=$1
 shift
 find_subcommand $subcommand
 source $subcommand_path
-run "$*"
+run "$@"
 
 # vim: set ft=sh

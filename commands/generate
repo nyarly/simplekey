@@ -1,0 +1,94 @@
+#!/usr/bin/env sh
+
+usage(){
+  echo "<real name> <email> <comment>"
+  echo "  Creates a new key for use with GPG."
+}
+
+setup(){
+  real_name=$1
+  email=$2
+  comment=$3
+}
+
+validate(){
+  if [ -z "$real_name" ]; then
+    fail "I need a name to associate with the key!"
+  fi
+
+  if [ -z "$email" ]; then
+    fail "I need an email address to associate with the key!"
+  fi
+
+  if echo $email | grep -v '@.*\.'; then
+    fail "'$email' doesn't appear to be an email address (needs an @ and then a .)"
+  fi
+
+  if gpg -K "$email" | grep  '^sec'; then
+    fail "There's already a key for '${email}'! Probably you want to use that one!"
+  fi
+
+  if [ -z "$comment" ]; then
+    fail "I need an identifying comment for your identity, like 'main email address' or something"
+  fi
+}
+
+invoke(){
+
+  echo "Creating the base key - you'll be asked for a password. Make it a good one."
+  echo "  The generation process itself may take a few minutes."
+
+  #The tabs below are important: sh here docs trim tabs, not spaces
+  $GNUPG --batch --gen-key <<-PARAM
+	Key-Type: RSA
+	Key-Length: 4096
+	Key-Usage: encrypt,sign,auth
+	Name-Real: $real_name
+	Name-Comment: $comment
+	Name-Email: $email
+	Expire-Date: 0
+	Preferences: SHA512 SHA384 SHA256 SHA224 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed
+	%ask-passphrase
+	%commit
+PARAM
+
+  if [ $? != 0 ]; then
+    return 1
+  fi
+
+  echo
+  echo "Now we're going to set up some sub keys, so that you don't have to use the base key day-to-day"
+  echo "  You'll be asked for your password from before."
+  echo
+  echo "There'll be lots of output now..."
+  echo
+
+  #The tabs below are important: sh here docs trim tabs, not spaces
+  $GNUPG --command-fd=0 --edit-key $email <<-COMMANDS
+	addkey
+	4
+	4096
+	2y
+	addkey
+	6
+	4096
+	2y
+        save
+COMMANDS
+}
+
+success(){
+  echo
+  echo "Excellent! You created a fresh GPG key. Here's what it looks like:"
+  echo
+  $GNUPG -K ${email}
+}
+
+failure(){
+  echo
+  echo "Seems like there was some problem generating your key."
+  echo "GPG can be really picky about things, though - it's possible you have a working key right now:"
+  echo "Here's what it looks like - you should see one line that starts 'sec' and two that start 'ssb'"
+  echo
+  $GNUPG -K ${email}
+}

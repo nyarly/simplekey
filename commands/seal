@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 usage() {
-  echo "simplekey seal <filename> <recipient>"
+  echo "<filename> <recipient>"
   echo "  Encrypts, signs and armors a file to a recipient"
   echo "  You will be able to safely email the resulting file to any and all of the people listed."
 }
