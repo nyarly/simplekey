@@ -11,10 +11,12 @@ people off.
 
 The philosophic goals here are these:
 
-1. Make GPG as easy to use as possible. The more people using strong
-   encryption, the better for everyone.
+1. Make PGP as easy to use as possible. The more people using strong
+   encryption, the better for everyone. One of the big hang ups right now is
+   that the PGP tools are difficult to use - moreso than they strictly have to
+   be.
 2. Make the interface itself auditable. This is why this is presented as shell
-   scripts rather than e.g. a web service. If you're concerned about what
+   scripts rather than a web service or a GUI. If you're concerned about what
    Simplekey does, open up the files and read them, or have someone you trust
    read them.
 3. Build a guide forward. The simplified interface provided here should be good
@@ -33,16 +35,20 @@ Mac OS X can do
 
 `brew install gnupg`
 
+Whatever package you install will need to include `gpg` and `gpgconf`.
+
 You'll also need `sh`, `grep` and `sed`. I only mention that because
 the requirements have been made intentionally as light as possible.
 
 ## Usage:
 
-Simplekey presents a series of subcommands. At present there are two:
+Simplekey presents a series of subcommands. At present there are:
 
 ```
+./simplekey help [command]
 ./simplekey seal <plaintext> <for>
 ./simplekey open <encrypted>
+./simplekey generate <name> <email> <comment>
 ```
 
 Those are the day to day "encrypt-sign" and "verify-decrypt" operations.
@@ -51,7 +57,6 @@ Planned are:
 
 ```
 ./simplekey configure
-./simplekey generate
 ./simplekey trust <users key>
 ./simplekey revoke
 ```
