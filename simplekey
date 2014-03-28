@@ -1,5 +1,11 @@
 #!/usr/bin/env sh
 
+GNUPGHOME="${GNUPGHOME:-$(gpgconf --list-dirs | grep ^homedir | sed 's/^[^:]*://')}"
+
+colon_field(){
+  echo $2 | cut -d: -f${1}
+}
+
 #Set a useful default for the GnuPG program
 GNUPG=$(which gpg2)
 if [ -z ${GNUPG} ]; then
@@ -9,17 +15,21 @@ if [ -z ${GNUPG} ]; then
   echo "Cannot find gpg or gpg2! Do you have gnupg installed?"
 fi
 
-MY_KEY=$($GNUPG --gpgconf-list | grep ^default-key | sed 's/[^:]*:[^:*]://')
-if [ -z $MY_KEY ]; then
-  MY_KEY=$($GNUPG --list-secret-keys | grep ^sec | head -n 1 | sed 's#[^/]*/\(\S*\).*#\1#')
-fi
+get_my_key(){
+  MY_KEY=$(colon_field 3 $($GNUPG --gpgconf-list | grep ^default-key))
+  if [ -z $MY_KEY ]; then
+    MY_KEY=$(colon_field 5 $($GNUPG --list-secret-keys --with-colons | grep ^sec | head -n 1))
+  fi
+}
+get_my_key
+
+#echo $MY_KEY
+#echo $GNUPGHOME
 
 if [ -z $MY_KEY ]; then
   echo "Hm. I can't find a secret key for you - this isn't going to be very useful until you get one set up."
   echo "Try: $0 help generate"
 fi
-
-GNUPGHOME= ${GNUPGHOME:-$(gpgconf --list-dirs | grep ^homedir | sed 's/^[^:]*://')}
 
 #Dispatch the command - commands are listed explicitly to avoid errors
 simplekey_root=$(dirname $0)
@@ -34,6 +44,9 @@ find_subcommand() {
     (generate)
       subcommand_name="generate"
       subcommand_path="${simplekey_root}/commands/generate" ;;
+    (fingerprint)
+      subcommand_name="fingerprint"
+      subcommand_path="${simplekey_root}/commands/fingerprint" ;;
     (help)
       subcommand_name="help"
       subcommand_path="${simplekey_root}/commands/help" ;;

@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+usage(){
+  echo
+  echo "  Outputs the just the fingerprint of your key. Useful for when other people need to add your key."
+}
+
+setup(){
+  :
+}
+
+validate(){
+  :
+}
+
+invoke(){
+  echo
+  echo "The fingerprint of your key is:"
+  colon_field 10 $($GNUPG --with-colons --fingerprint ${MY_KEY} | grep '^fpr') | sed 's/..../\0 /g'
+}
+
+success(){
+  :
+}
+
+failure(){
+  :
+}

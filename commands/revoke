@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+usage(){
+  echo
+  echo "Distributes a message called a 'revocation certificate' so that people will know not to use your current key any more"
+}
+
+setup(){
+  revoke_path="${GNUPGHOME}/${MY_KEY}-revoke.gpg.asc"
+}
+
+validate(){
+  if [ ! -f "${revoke_path}" ]; then
+    fail "There's no revocation certificate at '${revoke_path}' - I need that to revoke your key."
+  fi
+}
+
+invoke(){
+  echo "Revocation will make using your current key fruitless. You'll need to generate a new one. Are you sure about this?"
+  echo -n "> (yes or no) > "
+  read committed
+
+  echo
+  if [ "$committed" != "yes" ]; then
+    fail "You answered '$committed', rather than 'yes' - I'm not going to revoke your key."
+  fi
+
+  $GPG --import $revoke_path
+  $GPG --keyserver hkp://keys.gnupg.net --send-keys $MY_KEY
+}
+
+success(){
+  echo "Key revoked. Maybe create a new one with `$0 generate`?"
+}
+
+failure(){
+  echo "Something went wrong, not sure what."
+}

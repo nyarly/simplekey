@@ -10,7 +10,6 @@ setup(){
   email=$2
   comment=$3
 
-  revoke_path="${GNUPGHOME}/${email}-revoke.gpg.asc"
 }
 
 validate(){
@@ -22,21 +21,16 @@ validate(){
     fail "I need an email address to associate with the key!"
   fi
 
-  if echo $email | grep -v '@.*\.'; then
+  if echo $email | grep -v -q '@.*\.'; then
     fail "'$email' doesn't appear to be an email address (needs an @ and then a .)"
   fi
 
-  if gpg -K "$email" | grep  '^sec'; then
+  if gpg -K "$email" | grep -q '^sec'; then
     fail "There's already a key for '${email}'! Probably you want to use that one!"
   fi
 
   if [ -z "$comment" ]; then
     fail "I need an identifying comment for your identity, like 'main email address' or something"
-  fi
-
-  echo $revoke_path
-  if [ -f "$revoke_path" ]; then
-    fail "There is already a file at '$revoke_path' - since there's not a key for '${email}' maybe it's old?"
   fi
 }
 
@@ -83,11 +77,13 @@ PARAM
         save
 COMMANDS
 
-  set -x
-
   RETVAL=$?
 
+  get_my_key
+
+  revoke_path="${GNUPGHOME}/${MY_KEY}-revoke.gpg.asc"
   echo $revoke_path
+
   $GNUPG --command-fd=0 --output "${revoke_path}" --gen-revoke $email <<-COMMANDS
         y
         1
@@ -104,7 +100,7 @@ COMMANDS
   send_command= "$GNUPG --keyserver hkp://keys.gnupg.net --send-keys $email"
   if [ $DONT_SEND = "yes" ]; then
     echo "Not actually sending key..."
-    echo $send_command
+    echo "Would do: $send_command"
   else
     $send_command
   fi
