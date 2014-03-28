@@ -35,7 +35,7 @@ validate(){
 invoke(){
   echo "Running $GNUPG..."
 
-  $GNUPG --output "${output}" --decrypt "${file}"
+  $GNUPG --output "${output}" --keyserver hkp://keys.gnupg.net --keyserver-options auto-key-retrieve,verbose,honor-keyserver-url --decrypt "${file}"
 }
 
 success(){

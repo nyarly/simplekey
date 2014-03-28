@@ -31,7 +31,7 @@ validate() {
   fi
 
   if [ ! -f "$file" ]; then
-    fail "I can't find \"${file}\", so I can't encrypt it!"
+    fail "I can't find '${file}', so I can't encrypt it!"
   fi
 
 
@@ -47,11 +47,11 @@ invoke() {
   #  sign with your default key
   #  encrypt to the selected recipient
   #  also encrypt to yourself (not being able to re-decrypt can be very confusing).
-  $GNUPG  --armor --recipient "${recipients}"  --output  "${output}" --hidden-recipient $MY_KEY --sign  --encrypt  "${file}"
+  $GNUPG  --armor --recipient "${recipients}" --auto-key-locate=local,cert,keyserver,pka --output  "${output}" --hidden-recipient $MY_KEY --sign  --encrypt  "${file}"
 }
 
 success() {
-  echo "Successfully encrypted \"$file\" to \"$output\""
+  echo "Successfully encrypted '$file' to '$output'"
 }
 
 failure() {
