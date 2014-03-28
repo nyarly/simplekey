@@ -1,24 +1,63 @@
 #!/usr/bin/env sh
 
+usage(){
+  echo "['full'] <key name>"
+  echo "  Signs a key and marks its trust level."
+  echo "  If run like $subcommand_name 'full user@somewhere.com', I'll record that you trust the owner of the key to sign"
+  echo "  other people's keys. Otherwise, their trust will merely contribute to our trust, rather than being complete."
+}
+
+setup(){
+  trust_level=3 #Marginal
+  if [ $1 = "full" ]; then
+    trust_level=4 #Full
+    shift
+  fi
+  key_name=$1
+}
+
+validate(){
+  if $GNUPG --with-colons --list-key "${key_name}" | grep -q "No public key"; then
+    fail "I don't know any key called '${key_name}'"
+  fi
+}
+
 invoke(){
-  echo "We're about to add ${key_name} to our list of accepted keys."
+  echo "I'm about to add ${key_name} to your list of accepted keys."
   echo "What that means is that you have good reason to believe that this key really is controlled by the person"
   echo "that it says that it is."
-  echo "You'll be asked twice if you really want to do this, because it's an important step."
+  echo "You'll be asked twice if you really want to do this."
+  echo "The first time, you'll be asked because it's an important step."
   echo "Picture the owner of the key looking you in the eyes and saying 'Do you trust me?'"
   echo
-  echo "After the first time you confirm that you want to sign the key, you'll be shown "
+  echo "The second time, it's to confirm that the key actually belongs to its owner. You'll be shown"
   echo "the 'Primary key fingerprint' of the key. You need to check that against the key fingerprint"
   echo "that the key's owner gives you."
+  echo
   echo "(If they're using simplekey too, they can run `simplekey fingerprint` to list it."
   echo
 
-  $GPG --sign-key $key_name
-  $GPG --edit-key $key_name <<-COMMAND
+  $GNUPG --sign-key "${key_name}"
+
+  echo
+  echo "Now I'm going to mark the key with some level of trust, so that you don't have to individually sign every key ever."
+  echo
+
+  $GNUPG --edit-key "${key_name}" <<-COMMAND
         trust
-        3
+        ${trust_level}
         save
 COMMAND
 
-  $GPG --send-keys $key_name
+  echo "Finally, I'm going to send the key to a public key server, so that others can see that you trust this key."
+
+  $GNUPG --send-keys "${key_name}"
+}
+
+success(){
+  echo "Excellent. Everything went well."
+}
+
+failure(){
+  echo "Hm. Something went wrong."
 }
