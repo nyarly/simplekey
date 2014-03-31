@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
 usage() {
-  echo "<filename> <recipient>"
-  echo "  Encrypts, signs and armors a file to a recipient"
+  echo "<filename> <recipient>+"
+  echo "  Encrypts, signs and armors a file to at least one recipient"
   echo "  You will be able to safely email the resulting file to any and all of the people listed."
 }
 
@@ -13,15 +13,17 @@ setup() {
   recipients=$1
   shift
 
+  while [ $# -gt 0 ]; do
+    recipients="${recipients}${1}"
+    shift
+  done
+
+  recipients="${recipients}"
+
   output="$(basename ${file}).gpg.asc"
 }
 
 validate() {
-  #while [ $# -gt 0 ]; do
-  #  recipients="${recipients}\:-r\:${1}"
-  #  shift
-  #done
-  #
   if [ -z "$file" ]; then
     fail "No file argument! I have to have a file to encrypt."
   fi
@@ -47,7 +49,10 @@ invoke() {
   #  sign with your default key
   #  encrypt to the selected recipient
   #  also encrypt to yourself (not being able to re-decrypt can be very confusing).
-  $GNUPG  --armor --recipient "${recipients}" --auto-key-locate=local,cert,keyserver,pka --output  "${output}" --hidden-recipient $MY_KEY --sign  --encrypt  "${file}"
+  $GNUPG  --armor --command-fd=0 --auto-key-locate=local,cert,keyserver,pka --output  "${output}" --hidden-encrypt-to $MY_KEY --sign  --encrypt  "${file}" <<-RECV
+        ${recipients}
+
+RECV
 }
 
 success() {
