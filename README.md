@@ -31,9 +31,11 @@ You'll need gnupg2 installed. Most Linux distros have some variant of
 
 `apt-get install gnupg`
 
-Mac OS X can do
+Mac OS X users with [homebrew][1] installed can do
 
-`brew install gnupg`
+`brew install gnupg2`
+
+Or else install the full [GPGTools][2] suite.
 
 Whatever package you install will need to include `gpg` and `gpgconf`.
 
@@ -95,3 +97,6 @@ goals outlined in the introduction are inflexible, though.
 Furthermore, be aware that the act of issuing a Pull Request to this repository
 contitutes a contribution of the work in the Pull Request into the public
 domain.
+
+[1]: http://brew.sh/
+[2]: https://gpgtools.org/
